@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+    <element a="b" c="1">
+        <subElement>Hello</subElement>
+        <a:another xmlns:a="http://example.com">World</a:another>
+        <b:another xmlns:b="http://example.com/2" param="attr" />
+    </element>
+</root>
