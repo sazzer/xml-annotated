@@ -59,17 +59,17 @@ public class XmlHandler extends DefaultHandler {
             for (Method method : handler.getClass().getMethods()) {
                 StartElement startElement = method.getAnnotation(StartElement.class);
                 if (startElement != null) {
-                    LOG.info("Found handler for start element: " + method);
+                    LOG.debug("Found handler for start element: " + method);
                     startElements.put(method, new Path(startElement.value()));
                 }
                 EndElement endElement = method.getAnnotation(EndElement.class);
                 if (endElement != null) {
-                    LOG.info("Found handler for end element: " + method);
+                    LOG.debug("Found handler for end element: " + method);
                     endElements.put(method, new Path(endElement.value()));
                 }
                 Characters characters = method.getAnnotation(Characters.class);
                 if (characters != null) {
-                    LOG.info("Found handler for characters: " + method);
+                    LOG.debug("Found handler for characters: " + method);
                     this.characters.put(method, new Path(characters.value()));
                 }
             }
@@ -106,12 +106,12 @@ public class XmlHandler extends DefaultHandler {
                          Attributes attributes)
             throws SAXException {
         String name = buildName(uri, localName);
-        LOG.info("Processing " + name);
+        LOG.debug("Processing " + name);
         elementStack.push(name);
         for (Entry<Method, Path> entry : startElements.entrySet()) {
             if (entry.getValue().matches(elementStack)) {
                 Method method = entry.getKey();
-                LOG.info("Found matching callback method: " + method);
+                LOG.debug("Found matching callback method: " + method);
                 Class<?>[] parameterTypes = method.getParameterTypes();
                 Annotation[][] parameterAnnotations = method.getParameterAnnotations();
                 
@@ -165,13 +165,13 @@ public class XmlHandler extends DefaultHandler {
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
         String name = buildName(uri, localName);
-        LOG.info("Processing " + name);
+        LOG.debug("Processing " + name);
         String expected = elementStack.peek();
         if (expected.equals(name)) {
             for (Entry<Method, Path> entry : endElements.entrySet()) {
                 if (entry.getValue().matches(elementStack)) {
                     Method method = entry.getKey();
-                    LOG.info("Found matching callback method: " + method);
+                    LOG.debug("Found matching callback method: " + method);
                     Class<?>[] parameterTypes = method.getParameterTypes();
 
                     Object[] params = new Object[parameterTypes.length];
@@ -198,12 +198,12 @@ public class XmlHandler extends DefaultHandler {
     @Override
     public void characters(char[] chars, int start, int length) throws SAXException {
         String name = elementStack.peek();
-        LOG.info("Processing " + name);
+        LOG.debug("Processing " + name);
         String value = new String(chars, start, length);
         for (Entry<Method, Path> entry : characters.entrySet()) {
             if (entry.getValue().matches(elementStack)) {
                 Method method = entry.getKey();
-                LOG.info("Found matching callback method: " + method);
+                LOG.debug("Found matching callback method: " + method);
                 Class<?>[] parameterTypes = method.getParameterTypes();
 
                 Object[] params = new Object[parameterTypes.length];
@@ -218,9 +218,5 @@ public class XmlHandler extends DefaultHandler {
         }
         
     }
-    
-    
-    
-    
     
 }
